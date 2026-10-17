@@ -1,0 +1,38 @@
+# ===== 密钥与本地配置：绝不进镜像 =====
+.env
+.env.example
+
+# ===== 版本控制 / IDE =====
+.git
+.gitignore
+.claude
+.idea
+.vscode
+
+# ===== Python 缓存 =====
+__pycache__
+*.pyc
+*.pyo
+
+# ===== 本地开发痕迹 / 大体积无关目录 =====
+.tmp_pgv
+bundle
+screenshot
+docs
+# 迁移打包产物（scripts/package_deploy.sh 生成）
+deploy_package.tar.gz
+# 知识库全文语料（体积大，需要时自行准备后放回）
+data/assets/files
+
+# ===== 运行期数据（由 compose named volume 持久化）=====
+server/uploads
+server/reports
+
+# ===== TensorRT 引擎绑定本机 GPU 架构，不进镜像（运行时自动回退 best.pt）=====
+tools/yolo_mcp/models/best.engine
+tools/yolo_mcp/models/annotated
+
+# ===== MCP 本地配置（运行时直接调用算法模块，不走 MCP 服务端）=====
+.mcp.json
+tools/electric_mcp/.mcp.json
+tools/yolo_mcp/.mcp.json

@@ -1,0 +1,12 @@
+langgraph>=1.2
+langchain-core>=1.0
+langchain-openai>=1.0
+langgraph-checkpoint-postgres>=2.0
+# psycopg[binary] 自带 libpq：python:3.11-slim 等无系统 libpq 的环境必需
+psycopg[binary]>=3.2
+asyncpg>=0.29
+fastapi>=0.110
+uvicorn>=0.30
+python-dotenv>=1.0
+pydantic>=2
+python-multipart>=0.0.9

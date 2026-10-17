@@ -1,0 +1,25 @@
+# GPU 加速覆盖文件：把 torch/YOLO 推理切到 CUDA。
+#
+# 前置：宿主机已装 NVIDIA 驱动 + nvidia-container-toolkit
+#   （Windows Docker Desktop 在 Settings → Resources → WSL integration 中开启 GPU；
+#    Linux 参考 https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html）
+#
+# 用法（重建一个带 CUDA torch 的镜像，tag 为 electric-langgraph:gpu）：
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+#
+# 验证 YOLO 是否走 GPU：诊断页上传图片后返回里 engine 字段应为 "torch"（.pt 权重在 GPU 上跑，
+#   tensorrt 引擎仍不装）；CPU 镜像则无此覆盖文件直接 up 即可。
+services:
+  app:
+    image: electric-langgraph:gpu
+    build:
+      context: .
+      args:
+        TORCH_INDEX_URL: https://download.pytorch.org/whl/cu124
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

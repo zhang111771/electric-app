@@ -1,0 +1,23 @@
+{
+  "name": "electric-agent",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "电网智能体前端（对话式 Web 应用）：多会话 · SSE 流式 · 图表展示",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "element-plus": "^2.14.5",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "typescript": "~5.7.3",
+    "vite": "^6.3.5",
+    "vue-tsc": "^2.2.8"
+  }
+}

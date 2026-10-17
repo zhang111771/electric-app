@@ -1,0 +1,86 @@
+# 电网智能体 · 一键部署（PostgreSQL + 应用）
+#
+# 用法：
+#   cp .env.example .env            # 至少填好 LLM_API_KEY（compose 自动读取本仓库 .env 做 ${VAR} 替换）
+#   docker compose up -d --build    # 首次构建约 5~10 分钟（下载 torch），之后秒级
+#   打开 http://localhost:6006
+#
+# 可选增强：
+#   - 语义检索（pgvector + Ollama bge-m3）：把 app 的 EMBEDDING_MODE 改成 pgvector、
+#     EMBEDDING_BASE_URL 用 http://ollama:11434/v1，然后 docker compose --profile semantic up -d
+#   - GPU 加速 YOLO：docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+#     详见 docs/Docker部署.md
+services:
+  db:
+    image: pgvector/pgvector:pg16      # 官方镜像：PostgreSQL 16 + pgvector 扩展
+    container_name: electric-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}   # 生产环境务必改成强密码
+      POSTGRES_DB: electric_power
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d electric_power"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    image: electric-langgraph:latest
+    container_name: electric-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-6006}:6006"
+    environment:
+      PORT: 6006
+      # PostgreSQL（容器内通过 db 主机名访问；首次启动 entrypoint 会自动初始化业务数据）
+      POSTGRES_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/electric_power
+      # LLM（key 从本仓库 .env 读取；compose 自动做 ${VAR} 替换）
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.deepseek.com/v1}
+      LLM_API_KEY: ${LLM_API_KEY:?请在 .env 中配置 LLM_API_KEY}
+      LLM_MODEL: ${LLM_MODEL:-deepseek-chat}
+      # 知识库检索：默认 tfidf（零依赖开箱即用，kb_chunks.json 已打进镜像）。
+      # 想用语义检索（pgvector + Ollama bge-m3），把下面三行改为：
+      #   EMBEDDING_MODE: pgvector
+      #   EMBEDDING_BASE_URL: http://ollama:11434/v1
+      #   （其余保持），再执行 docker compose --profile semantic up -d
+      EMBEDDING_MODE: tfidf
+      EMBEDDING_BASE_URL: http://ollama:11434/v1
+      EMBEDDING_API_KEY: ollama
+      EMBEDDING_MODEL: bge-m3
+      # LangSmith 链路追踪（可选，不填则关闭）
+      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+      LANGSMITH_TRACING: ${LANGSMITH_TRACING:-false}
+      LANGSMITH_PROJECT: ${LANGSMITH_PROJECT:-electric_langgraph}
+    volumes:
+      - uploads:/app/server/uploads   # 诊断标注图（跨重启持久化）
+      - reports:/app/server/reports   # HTML 检测报告（跨重启持久化）
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6006/', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # 可选：语义检索用的本地 Embedding 服务（bge-m3，首次拉取约 600MB）
+  # 使用：docker compose --profile semantic up -d（并把 app 的 EMBEDDING_MODE 改为 pgvector）
+  ollama:
+    image: ollama/ollama:latest
+    container_name: electric-ollama
+    profiles: ["semantic"]
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 3; ollama pull bge-m3; wait"]
+
+volumes:
+  pgdata:
+  uploads:
+  reports:
+  ollama:
