@@ -33,9 +33,19 @@ bash scripts/run_local.sh     # 生成模拟数据 → 建知识库 → 启动 W
 
 - 🧠 **知识问答**：RAG 检索规程库作答（安规 / 调度规程 / 变压器规程 / 术语 / 事故案例）
 - 🗄️ **数据查询**：自然语言转 SQL，查询台账 / 负荷曲线 / 告警事件，时间序列自动画折线图
+- <img width="3828" height="1962" alt="image" src="https://github.com/user-attachments/assets/9d8ec56d-29ca-477f-8d9c-3efe0188ef57" />
 - 🔮 **负荷预测**：基于历史规律预测指定节点未来 N 小时负荷
 - 🔬 **缺陷检测（可选）**：YOLOv8 输电线路缺陷识别（`electric_langgraph/tools/yolo_mcp`）
+- <img width="3828" height="10177" alt="image" src="https://github.com/user-attachments/assets/a6e88fb2-8c26-46bc-8c60-9269adb48e1c" />
 - ⚡ **故障诊断（可选）**：TDOA 行波测距 / 局放 PRPD 模式识别（`electric_langgraph/tools/electric_mcp`）
+- <img width="3834" height="1977" alt="image" src="https://github.com/user-attachments/assets/0d682b21-1c51-4b93-98e1-1fc6e92234ec" />
+- <img width="3840" height="1968" alt="image" src="https://github.com/user-attachments/assets/60f24f75-7398-4b88-ae25-f4d717d7754c" />
+- <img width="3828" height="1962" alt="image" src="https://github.com/user-attachments/assets/9497d3e6-20b0-4156-88f3-cc5a1b3cb69a" />
+
+
+
+
+
 - 🤖 **多智能体编排**：LangGraph supervisor 意图路由 + PostgreSQL checkpointer 对话记忆
 
 ## 开源说明
