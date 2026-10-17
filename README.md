@@ -32,7 +32,7 @@ bash scripts/run_local.sh     # 生成模拟数据 → 建知识库 → 启动 W
 ## 功能一览
 
 - 🧠 **知识问答**：RAG 检索规程库作答（安规 / 调度规程 / 变压器规程 / 术语 / 事故案例）
-- 
+- <img width="3828" height="2775" alt="image" src="https://github.com/user-attachments/assets/33d72292-b4ea-4749-a72b-be0f6898b3e8" />
 - 🗄️ **数据查询**：自然语言转 SQL，查询台账 / 负荷曲线 / 告警事件，时间序列自动画折线图
 - <img width="3828" height="1962" alt="image" src="https://github.com/user-attachments/assets/9d8ec56d-29ca-477f-8d9c-3efe0188ef57" />
 - 🔮 **负荷预测**：基于历史规律预测指定节点未来 N 小时负荷
